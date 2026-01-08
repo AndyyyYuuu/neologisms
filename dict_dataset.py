@@ -14,12 +14,8 @@ def tokenize(string: str) -> torch.Tensor:
 # """
 # Predict: "<pos> <definition>"
 
-TEMPLATE_1 = tokenize("Definition: \n")
-TEMPLATE_2 = tokenize("\n")[1:]
-print(TEMPLATE_1, TEMPLATE_2)
-
 class DictData(Dataset): 
-    def __init__(self, path: str, tokenize):
+    def __init__(self, path: str, tokenize, template: str):
         df = pd.read_csv(path)
         df = df[df.pos.notnull()].reset_index(drop=True)
         def tokenize_one(word: str) -> None | int: 
@@ -33,26 +29,29 @@ class DictData(Dataset):
         print(df.head())
 
         df.word = df.word.map(tokenize_one)
-        
-        
         df = df[df.word.notnull()].reset_index(drop=True)
         df.word = df.word.astype(int)
         print(df.head())
         df.definition = df.apply(lambda x: x.pos + " " + x.definition, axis=1)
         df.definition = df.definition.map(lambda x: list(i.item() for i in tokenize(x)[1:]))
         self.df = df
+
+        template_split = template.split("{}")
+        self.template_1 = tokenize(template_split[0])
+        self.template_2 = tokenize(template_split[1])[1:]
+
     
     def __len__(self): 
         return len(self.df)
     
     def __getitem__(self, idx: int) -> tuple:
         row = self.df.iloc[idx]
-        return (torch.cat((TEMPLATE_1,
+        return (torch.cat((self.template_1,
                            torch.tensor(row.word, dtype=torch.long).unsqueeze(0),
-                           TEMPLATE_2)),
+                           self.template_2)),
                 torch.tensor(row.definition, dtype=torch.long))
 
-dataset = DictData("data/en_dict.csv", tokenize)
+dataset = DictData("data/en_dict.csv", tokenize, "Definition: \n{}\n")
 #print(dataset.df.head(10))
 
 pos_counts = dataset.df.pos.groupby(dataset.df.pos).count()

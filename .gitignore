@@ -180,5 +180,4 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 .DS_Store
-data/responses.csv
-data/lima_train.jsonl
+data/*

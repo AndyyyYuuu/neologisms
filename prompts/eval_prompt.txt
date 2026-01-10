@@ -1,0 +1,14 @@
+Your task is to take in an instruction and a response, and rate how good
+the response is.
+The possible qualities are 1 (worst) to 5 (best).
+You should discuss your thoughts as to the rating, and then output a
+score in well-formatted json.
+<begin instruction>
+{instruction}
+<end instruction>
+<begin response>
+{response}
+<end response>
+Output template:
+<your rationale>
+{"score": your_score}

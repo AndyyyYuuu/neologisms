@@ -9,7 +9,8 @@ from torch.utils.data import Dataset
 from pref_dataset import PrefData
 from tqdm import tqdm
 
-SAVE_PATH = "saves/neo_param.pt"
+SAVE_PATH = "saves/neo_param"
+MODEL_CACHE_DIR = "/Volumes/The Hole/huggingface" # Don't mind me, that's the name of my hard drive
 
 #print("Fetching dataset ...")
 
@@ -22,33 +23,20 @@ print("Loading resources ...")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "mps")
 
-cache_dir = "/Volumes/The Hole/huggingface"
-
 model = AutoModelForCausalLM.from_pretrained(
     "meta-llama/Llama-3.2-1B-Instruct", 
-    cache_dir=cache_dir,
+    cache_dir=MODEL_CACHE_DIR,    
     local_files_only=False,
-    torch_dtype=torch.float16
+    dtype=torch.bfloat16
 ).to(device)
-
-ref_model = AutoModelForCausalLM.from_pretrained(
-    "meta-llama/Llama-3.2-1B-Instruct", 
-    cache_dir=cache_dir,
-    local_files_only=False,
-    torch_dtype=torch.float16
-).to(device)
-
-ref_model.eval()
-for param in ref_model.parameters():
-    param.requires_grad = False
 
 # Train *only* the neologism
 for param in model.parameters():
-    param.requires_grad = True
+    param.requires_grad = False
 
 tokenizer = AutoTokenizer.from_pretrained(
     "meta-llama/Llama-3.2-1B-Instruct", 
-    cache_dir=cache_dir,
+    cache_dir=MODEL_CACHE_DIR,
     resume_download=True,
     local_files_only=False
 )
@@ -70,7 +58,7 @@ def ids_to_embed(ids: torch.Tensor) -> torch.Tensor:
     ids = ids.to(device)
     return model.model.embed_tokens.weight[ids]  # Vectorized embedding lookup
 
-def get_neo_prompt(template: str, neo: nn.Parameter) -> torch.Tensor:
+def get_neo_prompt(template: str, neo: torch.Tensor) -> torch.Tensor:
     template = template.split("{}")
     return torch.cat((str_to_embed(template[0]), neo.unsqueeze(0).to(device), str_to_embed(template[1])), dim=0)
 
@@ -86,6 +74,8 @@ train_loader = DataLoader(dataset, shuffle=True)
 neo_id = tokenize(INITIAL_TOKEN)[-1].item()
 neo_embed = token_to_embed(int(neo_id))
 neo_param = nn.Parameter(neo_embed.to(device))
+ref_neo_param = neo_embed.to(device)
+
 
 
 def APOLoss(beta: float): 
@@ -115,6 +105,20 @@ def get_log_probs(model: AutoModelForCausalLM, prompt_embed: torch.Tensor, respo
     token_log_probs = log_probs.gather(dim=-1, index=response_ids.unsqueeze(-1)).squeeze(-1) # (T_response)
     return token_log_probs.sum()  # (scalar)
 
+# Precompute log probs for reference embedding
+ref_log_probs_cache = []
+
+for prompt, chosen, rejected in tqdm(train_loader, desc="Computing reference log probs"):
+    chosen_ids = tokenize(chosen)
+    rejected_ids = tokenize(rejected)
+    pre_prompt_embed = str_to_embed(prompt)
+    ref_full_prompt_embed = torch.cat((pre_prompt_embed, get_neo_prompt(NEO_PROMPT, ref_neo_param)), dim=0)
+    with torch.no_grad():
+        log_prob_ref_c = get_log_probs(model, ref_full_prompt_embed, chosen_ids, grad=False)
+        log_prob_ref_r = get_log_probs(model, ref_full_prompt_embed, rejected_ids, grad=False)
+    ref_log_probs_cache.append((log_prob_ref_c.item(), log_prob_ref_r.item()))
+    torch.mps.empty_cache()
+
 
 for epoch in tqdm(range(N_EPOCHS), desc="Training"):
     epoch_losses = []
@@ -125,8 +129,8 @@ for epoch in tqdm(range(N_EPOCHS), desc="Training"):
         full_prompt_embed = torch.cat((pre_prompt_embed, get_neo_prompt(NEO_PROMPT, neo_param)), dim=0)
         log_prob_c = get_log_probs(model, full_prompt_embed, chosen_ids, grad=True)
         log_prob_r = get_log_probs(model, full_prompt_embed, rejected_ids, grad=True)
-        log_prob_ref_c = get_log_probs(ref_model, full_prompt_embed, chosen_ids, grad=False)
-        log_prob_ref_r = get_log_probs(ref_model, full_prompt_embed, rejected_ids, grad=False)
+        log_prob_ref_c = torch.tensor(ref_log_probs_cache[batch_idx][0], device=device)
+        log_prob_ref_r = torch.tensor(ref_log_probs_cache[batch_idx][1], device=device)
         torch.mps.empty_cache()
         loss = loss_fn(log_prob_c, log_prob_r, log_prob_ref_c, log_prob_ref_r)
         optim.zero_grad()
@@ -134,7 +138,7 @@ for epoch in tqdm(range(N_EPOCHS), desc="Training"):
         optim.step()
         epoch_losses.append(loss.item())
     avg_loss = sum(epoch_losses) / len(epoch_losses)
-    tqdm.write(f"Epoch {epoch+1}/{N_EPOCHS} mean loss: {avg_loss:.4f}")
-
-torch.save(neo_param.data, SAVE_PATH)
-print("Saved to ", SAVE_PATH)
+    
+    tqdm.write(f"Epoch {epoch+1}/{N_EPOCHS} mean loss: {avg_loss:.4f} | saving to {SAVE_PATH+f"{epoch+1}.pt"}")
+    torch.save(neo_param.data, SAVE_PATH+f"{epoch+1}.pt")
+    

@@ -8,7 +8,7 @@ from dpo_dataset import DPODataset
 
 #print(pipe("hello"))
 
-class PrefData(DPODataset): 
+class CSVData(DPODataset): 
     def __init__(self, path:str):
         df = pd.read_csv(path)
         df = df.to_dict(orient="records")

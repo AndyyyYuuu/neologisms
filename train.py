@@ -114,7 +114,7 @@ ref_neo_param = neo_embed.to(device)
 def APOLoss(beta: float): 
     # Use log probs
     def apo(prob_policy_y_c, prob_policy_y_r, prob_ref_y_c, prob_ref_y_r): 
-        return -torch.log(torch.sigmoid((prob_policy_y_c / prob_policy_y_r + prob_ref_y_c / prob_ref_y_r) * beta)) - torch.log(torch.sigmoid(prob_policy_y_c - prob_policy_y_r))
+        return -torch.log(torch.sigmoid(beta * (prob_policy_y_c - prob_policy_y_r + prob_ref_y_c - prob_ref_y_r))) - torch.log(torch.sigmoid(prob_policy_y_c - prob_policy_y_r))
         #       ^^^ modified DPO (Rafailov et al., 2024)                                                             ^^^ APO-up from D’Oosterlinck et al. (2025)
     return apo
 

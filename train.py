@@ -9,6 +9,7 @@ from torch.utils.data import Dataset
 from csv_dataset import CSVData
 from tqdm import tqdm
 from dataclasses import dataclass
+import os
 
 @dataclass(frozen=True)
 class Config:
@@ -19,6 +20,7 @@ class Config:
     N_EPOCHS: int
     SAVE_PATH: str
     MODEL_CACHE_DIR: str
+    PROBS_CACHE_DIR: str
     BETA: float
 
 
@@ -28,9 +30,10 @@ CONFIG = Config(
     DATA_SOURCE = "data/pref_responses.csv",
     MODEL_NAME = "meta-llama/Llama-3.2-1B-Instruct",
     N_EPOCHS = 10,
-    SAVE_PATH = "saves/neo_param",
+    SAVE_PATH = "saves/good_neo",
     MODEL_CACHE_DIR = "/Volumes/backrooms/huggingface", # Don't mind me, that's the name of my hard drive
-    BETA = 0.2
+    BETA = 0.2,
+    PROBS_CACHE_DIR = "saves"
 )
 
 #print("Fetching dataset ...")
@@ -114,7 +117,9 @@ ref_neo_param = neo_embed.to(device)
 def APOLoss(beta: float): 
     # Use log probs
     def apo(prob_policy_y_c, prob_policy_y_r, prob_ref_y_c, prob_ref_y_r): 
-        return -torch.log(torch.sigmoid(beta * (prob_policy_y_c - prob_policy_y_r + prob_ref_y_c - prob_ref_y_r))) - torch.log(torch.sigmoid(prob_policy_y_c - prob_policy_y_r))
+        return -nn.functional.logsigmoid(beta * (prob_policy_y_c - prob_policy_y_r + prob_ref_y_c - prob_ref_y_r)) - nn.functional.logsigmoid(prob_policy_y_c - prob_policy_y_r)
+        #return -torch.log(torch.sigmoid((prob_policy_y_c / prob_policy_y_r + prob_ref_y_c / prob_ref_y_r) * beta)) - torch.log(torch.sigmoid(prob_policy_y_c - prob_policy_y_r))
+
         #       ^^^ modified DPO (Rafailov et al., 2024)                                                             ^^^ APO-up from D’Oosterlinck et al. (2025)
     return apo
 
@@ -136,20 +141,32 @@ def get_log_probs(model: AutoModelForCausalLM, prompt_embed: torch.Tensor, respo
     token_log_probs = log_probs.gather(dim=-1, index=response_ids.unsqueeze(-1)).squeeze(-1) # (T_response)
     return token_log_probs.sum()  # (scalar)
 
+def stability_check(t: torch.Tensor) -> None:
+    if torch.isnan(t).any():
+        raise ValueError("Sound the alarm! NaN found!")
+    if torch.isinf(t).any():
+        raise ValueError("Sound the alarm! Inf found!")
+
 # Precompute log probs for reference embedding
 ref_log_probs_cache = []
 
-for prompt, chosen, rejected in tqdm(train_loader, desc="Computing reference log probs"):
-    chosen_ids = tokenize(chosen)
-    rejected_ids = tokenize(rejected)
-    pre_prompt_embed = str_to_embed(prompt)
-    ref_full_prompt_embed = torch.cat((pre_prompt_embed, get_neo_prompt(ref_neo_param)), dim=0)
-    with torch.no_grad():
-        log_prob_ref_c = get_log_probs(model, ref_full_prompt_embed, chosen_ids, grad=False)
-        log_prob_ref_r = get_log_probs(model, ref_full_prompt_embed, rejected_ids, grad=False)
-    ref_log_probs_cache.append((log_prob_ref_c.item(), log_prob_ref_r.item()))
-    clear_cache()
-
+ref_log_probs_path = os.path.join(CONFIG.PROBS_CACHE_DIR, f"{CONFIG.MODEL_NAME.split('/')[-1]}_ref_lp.pt")
+if os.path.exists(ref_log_probs_path):
+    ref_log_probs_cache = torch.load(ref_log_probs_path)
+    print(f"Loaded reference log probs from {ref_log_probs_path}!")
+else:
+    for prompt, chosen, rejected in tqdm(train_loader, desc="Computing reference log probs"):
+        chosen_ids = tokenize(chosen)
+        rejected_ids = tokenize(rejected)
+        pre_prompt_embed = str_to_embed(prompt)
+        ref_full_prompt_embed = torch.cat((pre_prompt_embed, get_neo_prompt(ref_neo_param)), dim=0)
+        with torch.no_grad():
+            log_prob_ref_c = get_log_probs(model, ref_full_prompt_embed, chosen_ids, grad=False)
+            log_prob_ref_r = get_log_probs(model, ref_full_prompt_embed, rejected_ids, grad=False)
+        ref_log_probs_cache.append((log_prob_ref_c.item(), log_prob_ref_r.item()))
+        clear_cache()
+    torch.save(ref_log_probs_cache, ref_log_probs_path)
+    print(f"Saved reference log probs to {ref_log_probs_path}")
 
 for epoch in tqdm(range(CONFIG.N_EPOCHS), desc="Training"):
     epoch_losses = []
@@ -167,6 +184,7 @@ for epoch in tqdm(range(CONFIG.N_EPOCHS), desc="Training"):
         clear_cache()
 
         loss = loss_fn(log_prob_c, log_prob_r, log_prob_ref_c, log_prob_ref_r)
+        stability_check(loss)
         optim.zero_grad()
         loss.backward()
         optim.step()

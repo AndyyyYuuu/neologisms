@@ -36,6 +36,9 @@ CONFIG = Config(
     PROBS_CACHE_DIR = "saves"
 )
 
+if not os.path.exists(CONFIG.SAVE_PATH):
+    os.makedirs(CONFIG.SAVE_PATH)
+
 #print("Fetching dataset ...")
 
 #dataset = pd.read_json(hf_hub_download(repo_id="GAIR/lima", filename="train.jsonl", repo_type="dataset"), lines=True)
@@ -107,11 +110,14 @@ def get_neo_prompt(neo: torch.Tensor) -> torch.Tensor:
 
 
 # Remember: this right here is what we're *actually* optimizing
-neo_id = tokenize(CONFIG.INITIAL_TOKEN)[-1].item()
-neo_embed = token_to_embed(int(neo_id))
+if CONFIG.INITIAL_TOKEN is not None:
+    neo_id = tokenize(CONFIG.INITIAL_TOKEN)[-1].item()
+    neo_embed = token_to_embed(int(neo_id))
+else:
+    embed_shape = token_to_embed(0).shape
+    neo_embed = torch.zeros(embed_shape, dtype=torch.bfloat16, device=device)
 neo_param = nn.Parameter(neo_embed.to(device))
 ref_neo_param = neo_embed.to(device)
-
 
 
 def APOLoss(beta: float): 

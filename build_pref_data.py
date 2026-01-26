@@ -9,9 +9,9 @@ import re
 
 tqdm.pandas()
 
-pipe = pipeline("text-generation", model="meta-llama/Llama-3.2-1B-Instruct")
+pipe = pipeline("text-generation", model="meta-llama/Llama-3.2-3B-Instruct")
 
-def build_responses(path_from: str, path_to: str, n_instructions: int, n_samples: int, batch_size: int = 8) -> None: 
+def build_responses(path_from: str, path_to: str, n_instructions: int, n_samples: int, batch_size: int = 1) -> None: 
     df = pd.read_json(path_from, lines=True).conversations.iloc[:n_instructions].map(lambda x: x[0]).to_frame()
     print(df.conversations[0])
     df = df.loc[df.index.repeat(n_samples)].reset_index(drop=True)
@@ -38,14 +38,14 @@ def build_responses(path_from: str, path_to: str, n_instructions: int, n_samples
             batch_size=batch_size
         )
         for result in batch_results:
-            all_responses.append(result['generated_text'][-1]['content'])
+            all_responses.append(result[0]['generated_text'][-1]['content'])
     
     df["response"] = all_responses
     df.rename(columns={"conversations": "instruction"}, inplace=True)
     df.to_csv(path_to)
     print(df.head())
 
-#build_responses("data/lima_train.jsonl", "data/responses.csv", 50, 7)
+build_responses("data/lima_train.jsonl", "data/responses.csv", 50, 7)
 
 
 def get_evaluation(instruction: str, response: str, deterministic: bool = True) -> float: 
@@ -201,3 +201,10 @@ def build_minmax(path_from: str, path_to: str) -> None:
 
 build_minmax("data/responses.csv", "data/pref_responses.csv")
 
+#print(get_evaluation("Can brain cells move? By movement I mean long distance migration (preferably within the brain only).",
+#                     "No, brain cells (neurons) are not capable of moving long distances through the blood or any other medium. They are specialized cells that reside in a highly organized and protected environment called the brain.  The brain is surrounded by a protective covering called the blood-brain barrier (BBB) that prevents substances and cells from entering or leaving the brain.\n\nIn addition, the BBB is a complex network of blood vessels that is highly selective and tight, making it difficult for substances to pass through.  This barrier is designed to protect the brain from damage and toxins, but it also limits the ability of brain cells to move and interact with their environment.\n\nAs a result, brain cells are not capable of long-distance migration, and any movement of brain cells is typically limited to short distances within the brain itself.  They can move in response to specific signals and stimuli, but they do not have the ability to migrate or travel to other parts of the body.\n\nIt's worth noting that there are some exceptions to this rule, such as the migratory behavior of certain neurons in the retina and the olfactory epithelium. However, these movements are generally limited to specific locations within the brain and do not involve long-distance migration."))
+#print(get_response("Can brain cells move? By movement I mean long distance migration (preferably within the brain only)."))
+#df = df.progress_apply(lambda x: )
+
+#df = pd.read_json(os.path.dirname(os.path.abspath(__file__)) + 'data/lima_train.jsonl', lines=True)
+#df = pd.read_json(open(os.path.dirname(os.path.abspath(__file__)) + "/data/lima_train.jsonl", "r", encoding="utf8"))

@@ -4,7 +4,9 @@ from tqdm import tqdm
 
 MODEL_NAME = "meta-llama/Llama-3.2-1B-Instruct"
 MODEL_CACHE_DIR = "/Volumes/backrooms/huggingface"
-NEO_PROMPT = r"Synonyms for \"{} \" include:"
+ZERO_CONTROL = True  # Set to True to zero out all values in the neo_param tensor
+with open("prompts/llama_instruct_synonym.txt") as f:
+    NEO_PROMPT = f.read()
 
 device = torch.device("mps")
 
@@ -29,13 +31,14 @@ def str_to_embed(string: str) -> torch.Tensor:
 def token_to_embed(token_id: int) -> torch.Tensor: 
     return model.model.embed_tokens.weight[token_id].to(device)
 
-
 neo_param = torch.load(f"saves/neo_param4.pt", map_location='cpu')
 print(neo_param)
-#exit()
 print(neo_param.shape)
+if ZERO_CONTROL:
+    neo_param = torch.zeros(neo_param.shape)
 neo_param = neo_param.to(device)
-neo_template = NEO_PROMPT.split("{}")
+neo_template = NEO_PROMPT.split(r"{}")
+print(neo_template)
 template_1 = str_to_embed(neo_template[0])
 template_2 = str_to_embed(neo_template[1])
 
@@ -43,9 +46,8 @@ def get_neo_prompt(neo: torch.Tensor, temperature: float = 0.0) -> torch.Tensor:
     return torch.cat((template_1, neo.unsqueeze(0).to(device), template_2), dim=0)
 
 def generate_response(max_new_tokens: int = 256, temperature: float = 0.0) -> str:
-    
+
     generated_tokens = []
-    print(neo_param)
     prompt = get_neo_prompt(neo_param).to(torch.bfloat16)
     assert not torch.isnan(prompt).any()
     assert not torch.isinf(prompt).any()
@@ -70,7 +72,6 @@ def generate_response(max_new_tokens: int = 256, temperature: float = 0.0) -> st
         prompt = torch.cat((prompt, token_to_embed(next_id).unsqueeze(0)), dim=0).to(torch.bfloat16)
     
     return tokenizer.decode(generated_tokens, skip_special_tokens=True)
-        next_embed = token_to_embed(next_id).unsqueeze(0).unsqueeze(0)
-    return tokenizer.decode(generated_tokens, skip_special_tokens=True)
-'''
-print(generate_response(max_new_tokens=32, temperature=0.5))
+
+for i in tqdm(range(100), desc="Repeating samples"):
+    tqdm.write(generate_response(max_new_tokens=32, temperature=0.5))

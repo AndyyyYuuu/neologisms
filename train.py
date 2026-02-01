@@ -28,6 +28,8 @@ class Config:
     ON_THE_FLY_REF_PROBS: bool
     EPOCH_SIZE: int | None = None
     DO_WANDB: bool = False
+    MODEL_DTYPE: torch.dtype = torch.bfloat16
+    NEO_DTYPE: torch.dtype = torch.float32
 
 CONFIG = Config(
     INITIAL_TOKEN = "good",
@@ -43,6 +45,8 @@ CONFIG = Config(
     ON_THE_FLY_REF_PROBS = True,
     EPOCH_SIZE = 128,
     DO_WANDB = True,
+    MODEL_DTYPE = torch.bfloat16,
+    NEO_DTYPE = torch.float32,
 )
 
 if CONFIG.DO_WANDB:
@@ -89,7 +93,7 @@ model = AutoModelForCausalLM.from_pretrained(
     CONFIG.MODEL_NAME, 
     cache_dir=CONFIG.MODEL_CACHE_DIR,    
     local_files_only=False,
-    dtype=torch.bfloat16
+    dtype=CONFIG.MODEL_DTYPE
 ).to(device)
 
 
@@ -140,9 +144,9 @@ if CONFIG.INITIAL_TOKEN is not None:
     neo_embed = token_to_embed(int(neo_id))
 else:
     embed_shape = token_to_embed(0).shape
-    neo_embed = torch.zeros(embed_shape, dtype=torch.bfloat16, device=device)
-neo_param = nn.Parameter(neo_embed.to(torch.float32).to(device))
-ref_neo_param = neo_embed.clone().detach().to(torch.float32)
+    neo_embed = torch.zeros(embed_shape, dtype=CONFIG.NEO_DTYPE, device=device)
+neo_param = nn.Parameter(neo_embed.to(CONFIG.NEO_DTYPE).to(device))
+ref_neo_param = neo_embed.clone().detach().to(CONFIG.NEO_DTYPE)
 #ref_neo_param.requires_grad = False
 
 
@@ -236,8 +240,8 @@ for epoch in tqdm(range(CONFIG.N_EPOCHS), desc="Training"):
         if stability_check(loss): continue
         optim.zero_grad()
         loss.backward()
-        # Clip gradients to prevent explosion
-        torch.nn.utils.clip_grad_norm_([neo_param], max_norm=1.0)
+        # Clip gradients
+        # torch.nn.utils.clip_grad_norm_([neo_param], max_norm=1.0)
         optim.step()
         #print(neo_param.grad.norm() if neo_param.grad is not None else "None")
         #param_after = neo_param.data.clone()

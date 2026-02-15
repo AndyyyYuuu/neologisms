@@ -11,12 +11,18 @@ from tqdm import tqdm
 from dataclasses import dataclass
 import os
 from dict_dataset import DictData
+import csv
+from template import EmbeddingTemplate
+
+WORD = "foreclearing"
+DEFINITION = (df := pd.read_csv("data/obscure_sorrows.csv", skipinitialspace=True).set_axis(['word', 'definition'], axis=1))[(df["word"].str.strip('"') == WORD)]["definition"].iloc[0]
+print(DEFINITION)
 
 
 @dataclass(frozen=True)
 class Config:
     INITIAL_TOKEN: str
-    NEO_PROMPT: str
+    NEO_PROMPT_PATH: str
     DATASET: Dataset
     MODEL_NAME: str
     N_EPOCHS: int
@@ -32,9 +38,9 @@ class Config:
     NEO_DTYPE: torch.dtype = torch.float32
 
 CONFIG = Config(
-    INITIAL_TOKEN = "good",
-    NEO_PROMPT = r"Provide a dictionary definition for the word \"{}\": ",
-    DATASET = DictData("data/en_dict.csv", "n. The act of deliberately refusing to learn the scientific explanations of things out of fear that it will ruin the magic"),
+    INITIAL_TOKEN = " the",
+    NEO_PROMPT_PATH = "prompts/llama_instruct_train_prompt.txt",
+    DATASET = DictData("data/en_dict.csv", DEFINITION),
     MODEL_NAME = "meta-llama/Llama-3.2-1B-Instruct",
     N_EPOCHS = 64,
     SAVE_PATH = "saves/dict_neo",
@@ -44,7 +50,7 @@ CONFIG = Config(
     REFERENCE_LOG_PROBS_PATH = "dict_neo_ref_lp_llama-3.2-1b-instruct.pt",
     ON_THE_FLY_REF_PROBS = True,
     EPOCH_SIZE = 128,
-    DO_WANDB = True,
+    DO_WANDB = False,
     MODEL_DTYPE = torch.bfloat16,
     NEO_DTYPE = torch.float32,
 )
@@ -129,14 +135,15 @@ def ids_to_embed(ids: torch.Tensor) -> torch.Tensor:
     ids = ids.to(device)
     return model.model.embed_tokens.weight[ids]  # Vectorized embedding lookup
 
-
+'''
 neo_template = CONFIG.NEO_PROMPT.split("{}")
 template_1 = str_to_embed(neo_template[0])
 template_2 = str_to_embed(neo_template[1])
 
+
 def get_neo_prompt(neo: torch.Tensor) -> torch.Tensor:
     return torch.cat((template_1, neo.unsqueeze(0), template_2), dim=0)
-
+'''
 
 # Remember: this right here is what we're *actually* optimizing
 if CONFIG.INITIAL_TOKEN is not None:
@@ -149,6 +156,7 @@ neo_param = nn.Parameter(neo_embed.to(CONFIG.NEO_DTYPE).to(device))
 ref_neo_param = neo_embed.clone().detach().to(CONFIG.NEO_DTYPE)
 #ref_neo_param.requires_grad = False
 
+prompt_template = EmbeddingTemplate(CONFIG.NEO_PROMPT_PATH, str_to_embed, token_to_embed)
 
 def APOLoss(beta: float): 
     # Use log probs
@@ -189,11 +197,11 @@ def stability_check(t: torch.Tensor) -> None:
 
 def compute_ref_log_probs(pre_prompt_embed: torch.Tensor, chosen_ids: torch.Tensor, rejected_ids: torch.Tensor) -> tuple[float, float]:
     with torch.no_grad():
-        ref_full_prompt_embed = torch.cat((pre_prompt_embed, get_neo_prompt(ref_neo_param)), dim=0)
+        ref_full_prompt_embed = torch.cat((pre_prompt_embed, prompt_template.format(ref_neo_param)), dim=0)
         log_prob_ref_c = get_log_probs(model, ref_full_prompt_embed, chosen_ids, grad=False)
         log_prob_ref_r = get_log_probs(model, ref_full_prompt_embed, rejected_ids, grad=False)
     return (log_prob_ref_c.item(), log_prob_ref_r.item())
-    
+
 
 if not CONFIG.ON_THE_FLY_REF_PROBS:
     # Precompute log probs for reference embedding
@@ -224,7 +232,7 @@ for epoch in tqdm(range(CONFIG.N_EPOCHS), desc="Training"):
         chosen_ids = tokenize(chosen)
         rejected_ids = tokenize(rejected)
         pre_prompt_embed = str_to_embed(prompt)
-        full_prompt_embed = torch.cat((pre_prompt_embed, get_neo_prompt(neo_param)), dim=0)
+        full_prompt_embed = torch.cat((pre_prompt_embed, prompt_template.format(neo_param)), dim=0)
         if CONFIG.ON_THE_FLY_REF_PROBS:
             log_prob_ref_c, log_prob_ref_r = compute_ref_log_probs(pre_prompt_embed, chosen_ids, rejected_ids)
         else:

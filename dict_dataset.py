@@ -30,7 +30,7 @@ class DictData(DPODataset):
         data = []
         for _, row in df.iterrows():
             data.append({
-                "prompt": "The definition is: \n",
+                "prompt": "", # In this case, the question is constant since we train the model on a single definition task, not different questions
                 "chosen": target_definition,
                 "rejected": row.definition
             })

@@ -1,0 +1,32 @@
+from dict_dataset import DictData
+import neologisms
+import pandas as pd
+import torch
+
+WORD = "foreclearing"
+DEFINITION = (df := pd.read_csv("data/obscure_sorrows.csv", skipinitialspace=True).set_axis(['word', 'definition'], axis=1))[(df["word"].str.strip('"') == WORD)]["definition"].iloc[0]
+print(DEFINITION)
+
+CONFIG = neologisms.TrainConfig(
+    INITIAL_TOKEN = " the",
+    NEO_PROMPT_PATH = "prompts/llama_instruct_train_prompt.txt",
+    DATASET = DictData("data/en_dict.csv", DEFINITION),
+    MODEL_NAME = "meta-llama/Llama-3.2-1B-Instruct",
+    N_EPOCHS = 64,
+    SAVE_PATH = "saves/dict_neo",
+    MODEL_CACHE_DIR = "/Volumes/backrooms/huggingface", # Don't mind me, that's the name of my hard drive
+    BETA = 0.2,
+    PROBS_CACHE_DIR = "saves",
+    REFERENCE_LOG_PROBS_PATH = "dict_neo_ref_lp_llama-3.2-1b-instruct.pt",
+    ON_THE_FLY_REF_PROBS = True,
+    MODEL_BACKEND = neologisms.HFTransformerBackend("meta-llama/Llama-3.2-1B-Instruct", "/Volumes/backrooms/huggingface", dtype=torch.bfloat16),
+    EPOCH_SIZE = 128,
+    DO_WANDB = False,
+    MODEL_DTYPE = torch.bfloat16,
+    NEO_DTYPE = torch.float32,
+    SPECIAL_DATA_PROCESS_FN = None,
+    
+)
+
+if __name__ == "__main__":
+    neologisms.train(CONFIG)

@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neologisms"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "torch",
+    "tqdm",
+    "numpy",
+    "pandas",
+    "transformers",
+    "datasets",
+    "huggingface-hub",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["neologisms*"]

@@ -3,7 +3,7 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 from transformers import AutoTokenizer, AutoModelForCausalLM
-from dpo_dataset import DPODataset
+from neologisms import dataset
 from collections.abc import Callable
 
 #tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-3.2-1B")
@@ -16,7 +16,7 @@ from collections.abc import Callable
 # """
 # Predict: "<pos> <definition>"
 
-class DictData(DPODataset): 
+class DictData(dataset.DPODataset): 
     def __init__(self, path: str, target_definition: str):
 
         df = pd.read_csv(path)

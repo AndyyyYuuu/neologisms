@@ -1,0 +1,4 @@
+<|begin_of_text|><|start_header_id|>user<|end_header_id|>
+Provide a dictionary definition for the word "{good}".<|eot_id|>
+<|start_header_id|>assistant<|end_header_id|>
+Definition of "{good}": 

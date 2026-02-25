@@ -1,3 +1,3 @@
 <|begin_of_text|><|start_header_id|>user<|end_header_id|>
-Define the word "{}" without using the word itself.<|eot_id|>
+What is a neural network? Give me a{ single} response.<|eot_id|>
 <|start_header_id|>assistant<|end_header_id|>

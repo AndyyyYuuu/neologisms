@@ -21,10 +21,8 @@ class TrainConfig:
     INITIAL_TOKEN: str
     NEO_PROMPT_PATH: str
     DATASET: Dataset
-    MODEL_NAME: str
     N_EPOCHS: int
     SAVE_PATH: str
-    MODEL_CACHE_DIR: str
     PROBS_CACHE_DIR: str
     BETA: float
     REFERENCE_LOG_PROBS_PATH: str
@@ -32,7 +30,6 @@ class TrainConfig:
     MODEL_BACKEND: LMBackend
     EPOCH_SIZE: int | None = None
     DO_WANDB: bool = False
-    MODEL_DTYPE: torch.dtype = torch.bfloat16
     NEO_DTYPE: torch.dtype = torch.float32
     
     SPECIAL_DATA_PROCESS_FN: Callable | None = None
@@ -50,45 +47,6 @@ def clear_cache(device: torch.device):
         torch.mps.empty_cache()
     elif device.type == "cuda":
         torch.cuda.empty_cache()
-
-'''
-AutoModelForCausalLM.from_pretrained(
-    CONFIG.MODEL_NAME, 
-    cache_dir=CONFIG.MODEL_CACHE_DIR,    
-    local_files_only=False,
-    dtype=CONFIG.MODEL_DTYPE
-).to(device)
-'''
-
-
-
-
-
-'''
-tokenizer = AutoTokenizer.from_pretrained(
-    CONFIG.MODEL_NAME, 
-    cache_dir=CONFIG.MODEL_CACHE_DIR,
-    resume_download=True,
-    local_files_only=False
-)
-'''
-
-
-'''
-def token_to_embed(token_id: int) -> torch.Tensor: 
-    return model.model.embed_tokens.weight[token_id].to(device)
-
-def tokenize(string: str) -> torch.Tensor:
-    return tokenizer(string, return_tensors='pt')["input_ids"][0].to(device)
-
-def str_to_embed(string: str) -> torch.Tensor:
-    token_ids = tokenize(string)
-    return model.model.embed_tokens.weight[token_ids]  # Vectorized embedding lookup
-
-def ids_to_embed(ids: torch.Tensor) -> torch.Tensor:
-    ids = ids.to(device)
-    return model.model.embed_tokens.weight[ids]  # Vectorized embedding lookup
-'''
 
 
 def APOLoss(beta: float): 
@@ -170,7 +128,7 @@ def run_train(CONFIG: TrainConfig) -> None:
         response_embed = model_backend.ids_to_embed(response_ids)
         full_embed = torch.cat((prompt_embed, response_embed), dim=0)  # (T, E)
         with torch.set_grad_enabled(grad):
-            logits = model_backend.embeds_forward(full_embed.unsqueeze(0)) # (B, T, V)
+            logits = model_backend.embeds_forward(full_embed.unsqueeze(0)).logits # (B, T, V)
 
         logits = logits.squeeze(0) # (T, V)
         response_logits = logits[prompt_len-1:-1] # (T_response, V)

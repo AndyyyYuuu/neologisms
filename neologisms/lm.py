@@ -65,7 +65,7 @@ class LMBackend(abc.ABC):
         return self.token_to_embed(0).shape
     
     def __repr__(self):
-        return f"{self.name} \n MODEL: {self.model.__repr__()} \n TOKENIZER: {self.tokenizer.__repr__()}"
+        return f"{self.name} \n MODEL: {self.model.__repr__()} \n TOKENIZER: {type(self.tokenizer).__name__}(\n\tname={self.tokenizer.name_or_path}\n\tvocab_size={self.tokenizer.vocab_size}\n\tmodel_max_len={self.tokenizer.model_max_length}\n)"
     
     
 

@@ -49,7 +49,7 @@ class Generator:
         return self._generate_response(self.prompt_template.format(neo_param), max_new_tokens, temperature)
     
     def generate_zero_control(self, max_new_tokens: int = 32, temperature: float = 0.0) -> str:
-        return self.generate_response(torch.zeros(self.embedding_shape), max_new_tokens, temperature)
+        return self.generate_response(torch.zeros(self.embedding_shape, device=self.device, dtype=self.dtype), max_new_tokens, temperature)
     
     def generate_default_control(self, max_new_tokens: int = 32, temperature: float = 0.0) -> str:
         return self._generate_response(self.prompt_template.default(), max_new_tokens, temperature)

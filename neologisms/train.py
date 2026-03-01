@@ -23,9 +23,8 @@ class TrainConfig:
     DATASET: Dataset
     N_EPOCHS: int
     SAVE_PATH: str
-    PROBS_CACHE_DIR: str
+    PROBS_CACHE_PATH: str
     BETA: float
-    REFERENCE_LOG_PROBS_PATH: str
     ON_THE_FLY_REF_PROBS: bool
     MODEL_BACKEND: LMBackend
     EPOCH_SIZE: int | None = None
@@ -149,7 +148,7 @@ def run_train(CONFIG: TrainConfig) -> None:
         # Precompute log probs for reference embedding
         ref_log_probs_cache = []
 
-        ref_log_probs_path = os.path.join(CONFIG.PROBS_CACHE_DIR, CONFIG.REFERENCE_LOG_PROBS_PATH)
+        ref_log_probs_path = CONFIG.PROBS_CACHE_PATH
         if os.path.exists(ref_log_probs_path):
             ref_log_probs_cache = torch.load(ref_log_probs_path)
             print(f"Loaded reference log probs from {ref_log_probs_path}!")

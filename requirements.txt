@@ -5,3 +5,4 @@ pandas
 transformers
 datasets
 huggingface-hub
+python-dotenv

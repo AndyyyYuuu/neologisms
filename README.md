@@ -27,4 +27,4 @@ The core procedure is outlined below:
 
 **Training objective:** Embedding $E_c$ is optimized using gradient descent while **all other parameters stay frozen**. We use a variant of DPO loss that encourages the likelihood of $y^{(c)}$ and the likelihood ratio between $y^{(c)}$ and $y^{(r)}$. 
 
-Congrats :tada: You have trained your very own neologism! The most immediate use case is to put the neologism in a prompt for controlling model output, a quick and easy PEFT method. 
+Congrats :tada: You have trained your very own neologism! 

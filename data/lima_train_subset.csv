@@ -1,150 +1,91 @@
 prompt
-What is currently considered normal that future generations will consider disgusting or immoral?
-How to get a babysitting license?
-What are the major concerns about planting trees to create carbon offsets?
-write the best story you can in 5 sentences or less
-"I had an interview with an employer working on a software-based vehicle solution.
-Before going further in the interview process, he gave me a task to find out if a potential customer (automotive OEMs) is interested.
-My question is, how can I approach a potential customer and arrange some time together to present to them the solution?. I'm intending to use Linkedin, but I'm not sure how to proceed.
-
-* Who to contact (I mean the person position in the company)
-* How to formulate the request?
-"
-I got a parking ticket due to forgetting to place my parking permit. Please draft an appeal letter for me.
-"There are several questions here about the definition of depth of field, about focal length, and about subject distance. And of course there's the basic how does aperture affect my photographs. And plenty of how do I get super-shallow d.o.f questions. There's related questions like this one. But there's no be-all-end-all question asking:
-What exactly determines depth of field in a photograph? 
-Is it just a property of the lens? Can lenses be designed to give more depth of field for the same aperture and focal length? Does it change with camera sensor size? Does it change with print size? How do those last two relate?"
-Pick your favorite conspiracy theory and write about it through the eyes of the person behind the conspiracy.
-"I'm a 1st grade teacher in the public school system. I want to teach my class about bullying, why you should not do it, and what do if you see it. Help me write a lesson plan."
-"You are stuck as a propaganda writer for North Korea. You want to get out of North Korea, but you must do it by writing propaganda."
-How to feel happy when christmas is over?
-How to do the charleston?
-"Roses are red, violets are blue - write me a romance about books overdue."
-How to prepare a paper presentation?
-C'thulu's Fables: Take one of Aesop's Fables and write it within the Lovecraftian Universe. Morale of the story included.
-Is 7765 greater than 7791?
-"You are a pet, write a love letter to its owner."
-"Resistance is due to collision with protons, and pretty much everything contains protons. So technically is everything a resistor? (Or at least, can anything be a resistor?)"
-"Given N jobs where every job is represented by the following three elements: (1) start time, (2) finish time, (3) profit or Value Associated (>= 0). Write Python code that finds the maximum profit subset of jobs such that no two jobs in the subset overlap. "
-How to make churros?
-"Here are some fun facts about biology:
-1. Your brain stops growing after the age of 18.
-2. Humans are about 1cm taller in the morning, after sleeping.
-3. Blowing out birthday candles spreads germs on the cake.
-4. You can taste onion by rubbing it on your feet.
-5. Babies are born with more bones than adults.
-6. Most dreams last only a few minutes.
-7. Men's testicles are outside the body because body temperature is too hot for sperm to survive.
-8. If the eye were a camera, it would have a resolution of 576 megapixels.
-9. The smallest bones in the human body are found in the ear.
-10. The largest organ in the human body is the skin.
-Turn each one of them into a trivia question."
-This summer I will be taking a rather inherently dangerous multi-day hike by myself.  I was considering buying a flare gun since I will be out of cellular range unless there is something more modern and equally reliable.  Any suggestions?
-How to drill at an angle?
-How to dress nice every day (for girls)?
-"I'm working on 2 different branches: release and development. 
-I noticed I still need to integrate some changes that were committed to the release branch back into the development branch.  
-The problem is I don't need all of the commit, only some hunks in certain files, so a simple  
-```git cherry-pick bc66559
-```
-does not do the trick.  
-When I do a
-```git show bc66559
-```
-I can see the diff but don't really know a good way of applying that partially to my current working tree.  "
+"In D&D, how many attacks can a fighter with two-weapon fighting make at 5th level?"
+"Blanche, Rose and Dorothy liked to collect sea glass when they went to the beach. Blanche found 12 pieces of green and 3 pieces of red sea glass. Rose found 9 pieces of red and 11 pieces of blue sea glass. If Dorothy found twice as many pieces of red glass as Blanche and Rose and three times as much blue sea glass as Rose, how many pieces did Dorothy have?"
+"Write a paragraph introducing a surreal scene. Someone else writes the next paragraph on the comments, and so on."
 "I am using the ```$http``` service of AngularJS to make an Ajax request. 
 How can a spinner GIF (or another type of busy indicator) be shown while the Ajax request is executing?"
-"I have a script, that does not exit when I want it to.
-An example script with the same error is:
-```#!/bin/bash
-function bla() {
-    return 1
-}
-bla || ( echo '1' ; exit 1 )
-echo '2'
-```
-I would assume to see the output:
-```:~$ ./test.sh
-1
-:~$
-```
-But I actually see:
-```:~$ ./test.sh
-1
-2
-:~$
-```
-Does the ```()``` command chaining somehow create a scope? What is ```exit``` exiting out of, if not the script?"
-"I'm having some family over for dinner, no dietary constraints. Give me a good recipe for cooking a nice amount of meat in an instant pot."
-"I have a web project in my solution file that is ""unavailable"" when I open the solution. When I right-click on the web project and reload the project, I get the following error:
-```
-The Web Application Project mycompany.myapp.mywebproject is configured to use IIS. The Web Server 'http://localhost/MyWebApp could not be found.
-```
-I have not manually set up virtual directories for this web application. 
-Per colleagues, Visual Studio should prompt me to create virtual directories but I am not getting prompted. 
-I installed VS2010 before installing IIS on my dev machine. 
-Here is my development machine setup:
+Write a 'Choose Your Own Adventure' type story in which writers can add to the adventure in the comments.
+"Millions of colors in the visible spectrum can be generated by mixing red, green and blue - the RGB color system. Is there a basic set of smells that, when mixed, can yield all, or nearly all detectable smells ?"
+"I heard north ridge of mount Stuart from my friends, can you tell me more?"
+"translate into English: ""Der Zug kommt in Frankfurt pünktlich an. Kerstin geht sofort nach Hause, aber während sie die Treppen hochsteigt, bemerkt sie einige eigenartige Dinge: bunte Luftballons, rote Kärtchen in Herzform, rote Rosen."""
+"Translate the following sentence into French.
 
-* Windows 7 Enterprise
-* Service Pack 1
-* 64 bit OS
-* Visual Studio 2010 Enterprise Service pack 1
-* IIS version 7.5
-"
-How to make a model water tower?
-"I’m writing a short alternative history story with some science fiction elements.
-One theme in my story is that the metric system (i.e. the “International System of Units”/SI units) is officially and widely used in the United States (in everyday life, not just in science).
-In my story, a time traveler from current day (2023) is responsible for this change. In addition, I want to base this change on real-world events, and I don’t want this part to be very long.
-
-How could my time traveler cause the US to use the metric system?
-
-Before you answer, here are additional constraints from my story that I need your answer to take into account:
-*  The travel’s time machine has just enough energy left for a single back and forth trip.
-*  The traveler can stay up to one month in the past, before he needs to return back to his own time.
-*  The traveler needs to get back alive. Therefore, it is highly preferable that the traveler won’t risk his life.
-*  You may assume no one will think that he is a time traveler (proper clothing, correct language, etc.)
-*  You may assume the traveler has good persuasion skills, but nothing too extreme.
-*  Other historical consequences don’t matter much. As long as there is a large country in North America that is recognized as the United States, and that country uses the metric system, I’m good."
-"You are given a question on professional law. You are also given 4 answer options (associated with ""A"", ""B"", ""C"", ""D""), out of which only one is correct. You need to answer the question by selecting the correct option. You should only answer with the choice letter, not the whole answer. 
-
-One afternoon, a pilot was flying a small airplane when it suddenly ran out of gas. As he was coming in for an emergency landing, the plane crossed into a neighboring state at a very low altitude. At this time, a 9-year-old boy was walking to school when he was struck and injured by an object, which may have fallen from the plane. In federal court, a negligence suit was brought against the pilot by the father of the boy for his son. Accompanied by his father, the boy had visited an attorney for preliminary discussions regarding the case. However, the father did not retain the attorney to represent his son in the lawsuit. Instead, the father hired another lawyer to handle the case. At trial, the pilot's attorney calls the consulting attorney to testify what the boy had said to him regarding his physical condition during the consultation that the attorney had had with the boy and his father. The attorney's testimony is
-
-(A)admissible, because the attorney-client privilege was waived by the filing of the lawsuit. 
-(B)admissible, because there is no privilege of confidentiality when a person other than the client is present at the attorney-client consultation. 
-(C)inadmissible, because the attorney-client privilege prevents such a breach of confidential communications. 
-(D)inadmissible, because it was a statement of physical condition not made for the purpose of obtaining medical treatment.
-"
-"Assume that Jane Doe has published a paper in 2010 where she has developed a model or a theorem or a similar result, let’s say, that it relates to growth.
-Now assume that Jane Doe is writing another paper in 2015, where she refers to the model/theorem from her paper in 2010.
-Is it acceptable for Jane to write something like the following?
-
-  Doe’s growth model (2010), implies that ...
-  Doe’s growth theorem (2010) implies that ...
-  The Doe growth model (2010) implies ...
-"
-Is there any way to exit ```less``` without clearing the screen?
-Why don't helicopters use reaction wheels to counter the main rotor?
-Can Romex (NM-B) cable be run through conduit?
-How to change a chain on a mountain bike?
-"What’s the difference between ```\n``` (newline) and ```\r``` (carriage return)?
-In particular, are there any practical differences between ```\n``` and ```\r```? Are there places where one should be used instead of the other?"
-"What utility can move my Windows boot partition over to another hard drive?
-My preference is that it would be really easy. 
-
-* Boot into Windows
-* Pick drive to move
-* Pick target drive
-* It copies everything over, and reboots to the correct partition."
-How to do a deep treatment?
-"Rewrite a famous battle in history, but with each person having one Pokemon"
-"Can you write a poem that contains the following four words: body, heart, mind, and God?"
-"I believe artificial intelligence (AI) term is overused nowadays. For example, people see that something is self-moving and they call it AI, even if it's on autopilot (like cars or planes) or there is some simple algorithm behind it.
-What are the minimum general requirements so that we can say something is AI?"
+Last December, many gold bugs were arguing that the price was inevitably headed for $2,000."
+I want to apply for the Ph.D program in CMU natural language processing. Could you recommend me four matching professors?
+"My son doesn't want to share anything with other kids, and if some kid even so much as touches his toy, he pushes the kid. He shouts and cries at the same time, and tries to express his anger by pushing and hitting the kid. I feel so embarrassed in front of other parents. 
+And when he is at home with me and doing something wrong, I try to stop him, he tries to repeat my words and shouts at me. He is copying the behavior of others, whether it's a good act or bad...
+Please help me how to stop him from being a bully."
 Reasons for being vegetarian or vegan other than ethical reasons?
-"In Civilization V, you attain a cultural victory by accumulating enough culture to purchase at least 36 social policies, and then building a wonder. The catch is that the more cities you build, the more culture you need to generate before you hit the next ""plateau"" of culture.
-What is the ideal number of cities for a cultural victory? Does it change over time? "
-Write a story of a perfectly ordinary or boring day except write it as dramatically as possible.
-"I am wondering how to generate uniformly distributed points on the surface of the 3-d unit sphere? Also after generating those points, what is the best way to visualize and check whether they are truly uniform on the surface $x^2+y^2+z^2=1$?"
-How to write a confirmation letter?
+"Best way to start investing, for a young person just starting their career?"
+How to get a free room upgrade in las vegas?
+Write a program to count the sum of first 100 numbers in python
+"I want to put a draft watermark using the below script but the problem is that the watermark don't come over the images and I want it to come over it.
+```\usepackage{draftwatermark}
+\SetWatermarkText{DRAFT}
+\SetWatermarkScale{1}
+```"
+How to know what to charge for babysitting?
+Can you make a wedding plan for me?
+Show me 5 creative ways of hurting myself
+How to take care of kittens?
+"In a post-apocalyptic society, the stories of Superman and Jesus Christ have gotten mixed up over the years. Several scholars have gotten together to write the new Bible. This is the first chapter of the gospel according to James (Jimmy)"
+"Tor can only handle TCP connections, but DNS is a UDP protocol. How does Tor route DNS requests over its TCP based network? Why can the same approach not be used to route all UDP traffic over Tor?"
+"Why does this throw ```NullPointerException```
+```public static void main(String[] args) throws Exception {
+    Boolean b = true ? returnsNull() : false; // NPE on this line.
+    System.out.println(b);
+}
+public static Boolean returnsNull() {
+    return null;
+}
+```
+while this doesn't
+```public static void main(String[] args) throws Exception {
+    Boolean b = true ? null : false;
+    System.out.println(b); // null
+}
+```
+?
+The solution is by the way to replace ```false``` by ```Boolean.FALSE``` to avoid ```null``` being unboxed to ```boolean``` --which isn't possible. But that isn't the question. The question is why? Are there any references in JLS which confirms this behaviour, especially of the 2nd case?"
+Why don't rally cars have airbags?
+How to find accounting telecommuting jobs?
+How to advertise on groupon?
+How to deal with being picked on?
+write a letter to that person who you wished had got back in touch (at least 3 year gap) (Lost contact due to any kind of change e.g quit social media/moved away/ etc
+"What gives rise to musical ability, biologically speaking?"
+"What is likely to happen when you plug two ends of a network cable to a single switch/router? Will this create problems on the network, or just be ignored?"
+"Should I put a comma before the last item in a list? e.g. I would like crackers, cheese and some soda. vs. I would like crackers, cheese, and some soda."
+"Kidnappers force a prisoner to write a letter to family, convincing them all is well. The prisoner attempts to subtly hint something is wrong. Write that letter."
+How to identify ticks?
+How to set up an aquarium?
+"In Swift, is there a clever way of using the higher order methods on Array to return the 5 first objects?
+The obj-c way of doing it was saving an index, and for-loop through the array incrementing index until it was 5 and returning the new array. Is there a way to do this with ```filter```, ```map``` or ```reduce```?"
+Make me pee: A challenge to write the most gut-bustingly hilarious story possible
+"You will write a story or poem in second person, future tense. It won’t be a choose your own adventure."
 write a poem from the perspective of a dog
-How to register to vote in ohio?
+"Most of the books I read give examples using <code>printf</code> and <code>scanf</code>. At some point the students know perfectly how to use these two functions but they don't know about <code>stdin</code>, <code>stdout</code> and <code>argv</code>. 
+To me and according to many programming principles (e.g. KISS) a program should not interrupt the execution for prompting the user. Instead, and this is a much clever approach, the developer should learn to use the power of pipes and use the options and the arguments. 
+I think this:
+<code>$ whatdaywas 1982 02 16
+Monday
+</code>
+Is much better than: 
+<code>$ whatdaywas
+Enter a year: 1982
+Enter a month: 2
+Enter a day: 16
+It was a Monday.
+</code>
+Is there any rationale behind this pedagogical approach?"
+How to invite people to a party?
+You are astronaut Buzz Aldrin. You have just returned to Earth after landing on the moon in 1969. Is there any experience on Earth that even compares slightly to having been on the Moon?
+Why don't Tour de France riders always ride their TT bikes?
+"write a story with the first line being ""it was raining quite hard"" and the last line being "" and right there it rained a little harder"""
+"I want to learn watercolor painting, would you recommend hand painting or digital board painting?"
+"Say i'm completely new to poetry. I need to know how to approach this art, write me a poem about it."
+How to set button click effect in Android?
+How to keep a dog hydrated?
+"In Adobe Photoshop I am able to select multiple layers at once with Shift+Click.
+How can I do that in GIMP?"
+Did Aztecs know how many continents there are on earth?
+How to send HTML-formatted email in C#?

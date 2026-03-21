@@ -1,5 +1,4 @@
 *
 !.gitignore
-!lima_train_subset.csv
 !en_dict.csv
 !*.ipynb

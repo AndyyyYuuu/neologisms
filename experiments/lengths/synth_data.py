@@ -5,6 +5,9 @@ from tqdm import tqdm
 import pandas as pd
 import json
 import random
+from pathlib import Path
+
+DIR = Path(__file__).parent
 
 random.seed(8128)
 
@@ -79,7 +82,7 @@ def build_length_dataset(questions_csv_path: str, dest_csv_path: str, start: int
 
 if __name__ == "__main__":
     #df = pd.read_json("data/lima_train.jsonl", lines=True).conversations
-    build_length_dataset("data/lima_train_subset.csv", "data/lima_train_subset_lengths.csv", start=5, stop=300, n_buckets=10)
+    build_length_dataset("data/lima_train_subset.csv", DIR / "data/lima_train_subset_lengths.csv", start=5, stop=300, n_buckets=10)
     #response = iter_get_length_response("How does a neural network work?", 400, error_margin=0.05, max_iters=10)
     #df = sample_length_responses(range(100, 1000, 100), "How does a neural network work?")
     #print(len(response.split()))

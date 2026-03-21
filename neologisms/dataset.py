@@ -1,11 +1,7 @@
 import torch
 from torch.utils.data import Dataset
 import pandas as pd
-#from transformers import pipeline
 
-#pipe = pipeline("text-generation", model="google/gemma-2b")
-
-#print(pipe("hello"))
 
 class DPODataset(Dataset):
     def __init__(self, data: list[dict]):

@@ -4,11 +4,17 @@ import pandas as pd
 import torch
 from pathlib import Path
 from datetime import datetime
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 MIN_LENGTH = 5
 MAX_LENGTH = 50
 
 DIR = Path(__file__).parent
+
+MODEL_CACHE_DIR = os.getenv("MODEL_CACHE_DIR", None)
 
 run_id = f"run_{datetime.now().strftime("%m%d_%H%M")}_{MIN_LENGTH}-{MAX_LENGTH}"
 
@@ -24,7 +30,7 @@ CONFIG = neologisms.TrainConfig(
     BETA = 0.2,
     PROBS_CACHE_PATH = DIR / f"saves/{run_id}/length_neo_ref_lp_llama-3.2-1b-instruct.pt",
     ON_THE_FLY_REF_PROBS = True,
-    MODEL_BACKEND = neologisms.HFTransformerBackend("meta-llama/Llama-3.2-1B-Instruct", "/Volumes/backrooms/huggingface", dtype=torch.bfloat16),
+    MODEL_BACKEND = neologisms.HFTransformerBackend("meta-llama/Llama-3.2-1B-Instruct", MODEL_CACHE_DIR, dtype=torch.bfloat16),
     EPOCH_SIZE = 128,
     DO_WANDB = False,
     NEO_DTYPE = torch.float32,

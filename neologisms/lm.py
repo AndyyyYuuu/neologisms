@@ -2,6 +2,19 @@ import abc
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from .utils import find_device
+from dotenv import load_dotenv
+import os
+import huggingface_hub
+
+load_dotenv()
+
+hf_token = os.getenv("HF_TOKEN")
+if hf_token is not None:
+    huggingface_hub.login(token=hf_token)
+else:
+    print("HF_TOKEN is not set, skipping huggingface login")
+
+
 
 class LMBackend(abc.ABC):
 

@@ -30,7 +30,7 @@ CONFIG = neologisms.TrainConfig(
     BETA = 0.2,
     PROBS_CACHE_PATH = DIR / f"saves/{run_id}/length_neo_ref_lp_llama-3.2-1b-instruct.pt",
     ON_THE_FLY_REF_PROBS = True,
-    MODEL_BACKEND = neologisms.HFTransformerBackend("meta-llama/Llama-3.2-1B-Instruct", MODEL_CACHE_DIR, dtype=torch.bfloat16),
+    MODEL_BACKEND = neologisms.HFTransformerBackend("meta-llama/Llama-3.2-1B-Instruct", MODEL_CACHE_DIR, dtype=torch.float32),
     EPOCH_SIZE = 128,
     DO_WANDB = False,
     NEO_DTYPE = torch.float32,

@@ -75,17 +75,26 @@ def run_train(CONFIG: TrainConfig) -> None:
     Args:
         CONFIG (TrainConfig): Configuration for the training
     """
-    if CONFIG.DO_WANDB:
+    do_wandb = CONFIG.DO_WANDB
+    if do_wandb:
         import wandb
-        wandb.init(
-            project="neologisms",
-            config={
-                "model": CONFIG.MODEL_BACKEND.name,
-                "initial_token": CONFIG.INITIAL_TOKEN,
-                "beta": CONFIG.BETA,
-                "epoch_size": CONFIG.EPOCH_SIZE,
-            }
-        )
+        from dotenv import load_dotenv
+        load_dotenv()
+        wandb_key = os.getenv("WANDB_API_KEY")
+        if wandb_key is not None:
+            wandb.login(key=wandb_key)
+            wandb.init(
+                project="neologisms",
+                config={
+                    "model": CONFIG.MODEL_BACKEND.name,
+                    "initial_token": CONFIG.INITIAL_TOKEN,
+                    "beta": CONFIG.BETA,
+                    "epoch_size": CONFIG.EPOCH_SIZE,
+                }
+            )
+        else:
+            print("WANDB_API_KEY is not set, skipping wandb logging")
+            do_wandb = False
     
     if not os.path.exists(CONFIG.SAVE_PATH):
         os.makedirs(CONFIG.SAVE_PATH)
@@ -207,7 +216,7 @@ def run_train(CONFIG: TrainConfig) -> None:
             
 
         avg_loss = sum(epoch_losses) / len(epoch_losses)
-        if CONFIG.DO_WANDB:
+        if do_wandb:
             wandb.log({
                 "loss": avg_loss,
                 "neo_param_grad_norm": sum(epoch_grad_norms) / len(epoch_grad_norms),

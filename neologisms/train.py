@@ -25,6 +25,7 @@ class TrainConfig:
     SAVE_PATH: str
     PROBS_CACHE_PATH: str
     BETA: float
+    LEARNING_RATE: float = 1e-3
     ON_THE_FLY_REF_PROBS: bool
     MODEL_BACKEND: LMBackend
     EPOCH_SIZE: int | None = None
@@ -109,6 +110,7 @@ def run_train(CONFIG: TrainConfig) -> None:
 
     dataset = CONFIG.DATASET
     train_loader = DataLoader(dataset, shuffle=True)
+    ref_loader = DataLoader(dataset, shuffle=False)
     # Train *only* the neologism
     for param in model.parameters():
         param.requires_grad = False
@@ -128,7 +130,7 @@ def run_train(CONFIG: TrainConfig) -> None:
     prompt_template = EmbeddingTemplate(CONFIG.NEO_PROMPT_PATH, model_backend.str_to_embed, model_backend.token_to_embed)
 
     loss_fn = APOLoss(beta=CONFIG.BETA)
-    optim = torch.optim.Adafactor([neo_param])
+    optim = torch.optim.Adafactor([neo_param], lr=CONFIG.LEARNING_RATE)
 
     # Gets the log probability of the response given the prompt
     def get_log_probs(model_backend: LMBackend, prompt_embed: torch.Tensor, response_ids: torch.Tensor, grad: bool) -> torch.Tensor:
@@ -154,19 +156,19 @@ def run_train(CONFIG: TrainConfig) -> None:
 
 
     if not CONFIG.ON_THE_FLY_REF_PROBS:
-        # Precompute log probs for reference embedding
-        ref_log_probs_cache = []
+        # Precompute log probs for reference embedding, keyed by dataset index
+        ref_log_probs_cache = {}
 
         ref_log_probs_path = CONFIG.PROBS_CACHE_PATH
         if os.path.exists(ref_log_probs_path):
             ref_log_probs_cache = torch.load(ref_log_probs_path)
             print(f"Loaded reference log probs from {ref_log_probs_path}!")
         else:
-            for prompt, chosen, rejected in tqdm(train_loader, desc="Computing reference log probs"):
+            for idx, (prompt, chosen, rejected) in enumerate(tqdm(ref_loader, desc="Computing reference log probs")):
                 chosen_ids = model_backend.tokenize(chosen)
                 rejected_ids = model_backend.tokenize(rejected)
                 pre_prompt_embed = model_backend.str_to_embed(prompt)
-                ref_log_probs_cache.append(compute_ref_log_probs(pre_prompt_embed, chosen_ids, rejected_ids))
+                ref_log_probs_cache[idx] = compute_ref_log_probs(pre_prompt_embed, chosen_ids, rejected_ids)
             torch.save(ref_log_probs_cache, ref_log_probs_path)
             print(f"Saved reference log probs to {ref_log_probs_path}")
     
@@ -177,7 +179,8 @@ def run_train(CONFIG: TrainConfig) -> None:
     for epoch in tqdm(range(CONFIG.N_EPOCHS), desc="Training"):
         epoch_losses = []
         epoch_grad_norms = []
-        for batch_idx, (prompt, chosen, rejected) in enumerate(tqdm(train_loader, desc=f"Epoch {epoch+1}/{CONFIG.N_EPOCHS}", total=CONFIG.EPOCH_SIZE if CONFIG.EPOCH_SIZE is not None else len(train_loader))):
+        epoch_loader = ref_loader if not CONFIG.ON_THE_FLY_REF_PROBS else train_loader
+        for batch_idx, (prompt, chosen, rejected) in enumerate(tqdm(epoch_loader, desc=f"Epoch {epoch+1}/{CONFIG.N_EPOCHS}", total=CONFIG.EPOCH_SIZE if CONFIG.EPOCH_SIZE is not None else len(epoch_loader))):
             if CONFIG.EPOCH_SIZE is not None and batch_idx >= CONFIG.EPOCH_SIZE:
                 break
             #param_before = neo_param.data.clone()

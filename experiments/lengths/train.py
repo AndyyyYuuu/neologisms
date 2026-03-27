@@ -18,7 +18,7 @@ MODEL_CACHE_DIR = os.getenv("MODEL_CACHE_DIR", None)
 
 run_id = f"run_{datetime.now().strftime("%m%d_%H%M")}_{MIN_LENGTH}-{MAX_LENGTH}"
 
-dataset = LengthDataset(DIR / "data/lima_train_subset_lengths.csv", min_length=MIN_LENGTH, max_length=MAX_LENGTH)
+dataset = LengthDataset(DIR / "data/lima_train_subset_lengths.csv", min_length=MIN_LENGTH, max_length=MAX_LENGTH, one_per_question=True)
 
 
 CONFIG = neologisms.TrainConfig(

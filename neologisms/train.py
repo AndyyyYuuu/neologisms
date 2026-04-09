@@ -25,9 +25,9 @@ class TrainConfig:
     SAVE_PATH: str
     PROBS_CACHE_PATH: str
     BETA: float
-    LEARNING_RATE: float = 1e-3
-    ON_THE_FLY_REF_PROBS: bool
     MODEL_BACKEND: LMBackend
+    LEARNING_RATE: float = 1e-3
+    ON_THE_FLY_REF_PROBS: bool = True
     EPOCH_SIZE: int | None = None
     DO_WANDB: bool = False
     NEO_DTYPE: torch.dtype = torch.float32

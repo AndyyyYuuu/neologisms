@@ -32,13 +32,22 @@ def visualize(embeds: list[torch.Tensor], cust_embed_labels: list[str], ref_mode
         all_embeds: np.ndarray = np.concatenate((cust_embeds, ref_embeds), axis=0)
         all_labels = cust_embed_labels + ref_embed_labels
         all_classes = ['custom'] * len(cust_embeds) + ['reference'] * len(ref_embeds)
-        
+
+        show_legend = True
     else: 
         all_embeds = cust_embeds
         all_labels = cust_embed_labels
         all_classes = ['custom'] * len(cust_embeds)
+        show_legend = False
 
     pca_embeds: np.ndarray = pca.fit_transform(all_embeds)
+    evr = pca.explained_variance_ratio_
+    cum = float(np.sum(evr))
+    print("PCA explained variance ratio per component:")
+    for i, r in enumerate(evr):
+        print(f"\tPC{i + 1}: {r:.6f}")
+    print(f"Cumulative variance (PC1–PC{pca_dims}): {cum:.6f}")
+
     df = pd.DataFrame({
         "x": pca_embeds[:, 0],
         "y": pca_embeds[:, 1],
@@ -46,10 +55,10 @@ def visualize(embeds: list[torch.Tensor], cust_embed_labels: list[str], ref_mode
         "class": all_classes,
     })
 
-    _, ax = plt.subplots(figsize=(10, 10))
-    sns.set_theme()
-    sns.scatterplot(data=df, x="x", y="y", hue="class", style="label", ax=ax)
+    sns.set_theme(context="notebook", style="darkgrid")
+    _, ax = plt.subplots(figsize=(5, 5))
+    sns.scatterplot(data=df, x="x", y="y", hue="class", ax=ax, legend=show_legend)
     for i, row in df.iterrows():
-        ax.annotate(row["label"], (row["x"], row["y"]), fontsize=7, alpha=0.5)
+        ax.annotate(row["label"], (row["x"], row["y"]), fontsize=9, alpha=0.5)
     plt.title(title)
     plt.show()

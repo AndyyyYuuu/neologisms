@@ -61,6 +61,14 @@ class LMBackend(abc.ABC):
         Converts single token id to single embedding vector
         """
         return self.ids_to_embed(torch.tensor([token_id], device=self.device)).squeeze(0)
+    
+    def embedding_matrix(self) -> torch.Tensor: 
+        """
+        Returns:
+            torch.Tensor: shape (vocab_size, d), the embedding matrix
+        """
+        raise NotImplementedError("embedding_matrix is not implemented for this model")
+        
 
     def embeds_forward(self, x: torch.Tensor, past_key_values=None) -> torch.Tensor:
         """
@@ -101,3 +109,6 @@ class HFTransformerBackend(LMBackend):
     
     def ids_to_str(self, ids: torch.Tensor) -> str:
         return self.tokenizer.decode(ids, skip_special_tokens=True)
+    
+    def embedding_matrix(self) -> torch.Tensor: 
+        return self.model.model.embed_tokens.weight.detach().to(self.device)

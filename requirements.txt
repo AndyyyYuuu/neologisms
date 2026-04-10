@@ -6,3 +6,6 @@ transformers
 datasets
 huggingface-hub
 python-dotenv
+faiss-cpu
+scikit-learn
+seaborn

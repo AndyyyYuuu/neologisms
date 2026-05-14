@@ -52,7 +52,7 @@ def clear_cache(device: torch.device):
 def APOLoss(beta: float): 
     # Use log probs
     def apo(prob_policy_y_c, prob_policy_y_r, prob_ref_y_c, prob_ref_y_r): 
-        return -nn.functional.logsigmoid(beta * (prob_policy_y_c - prob_policy_y_r + prob_ref_y_c - prob_ref_y_r)) - nn.functional.logsigmoid(prob_policy_y_c - prob_policy_y_r)
+        return -nn.functional.logsigmoid(beta * (prob_policy_y_c - prob_policy_y_r + prob_ref_y_c - prob_ref_y_r)) - nn.functional.logsigmoid(beta * (prob_policy_y_c - prob_policy_y_r))
         #return -torch.log(torch.sigmoid((prob_policy_y_c / prob_policy_y_r + prob_ref_y_c / prob_ref_y_r) * beta)) - torch.log(torch.sigmoid(prob_policy_y_c - prob_policy_y_r))
 
         #       ^^^ modified DPO (Rafailov et al., 2024)                                                             ^^^ APO-up from D’Oosterlinck et al. (2025)
@@ -145,7 +145,7 @@ def run_train(CONFIG: TrainConfig) -> None:
         log_probs = torch.nn.functional.log_softmax(response_logits, dim=-1) # (T_response, V)
         token_log_probs = log_probs.gather(dim=-1, index=response_ids.unsqueeze(-1)).squeeze(-1) # (T_response)
         token_log_probs = torch.clamp(token_log_probs, min=-50.0, max=0.0)
-        return token_log_probs.sum()  # (scalar)
+        return token_log_probs.mean()  # (scalar) mean or sum? (I'm thinking mean)
 
     def compute_ref_log_probs(pre_prompt_embed: torch.Tensor, chosen_ids: torch.Tensor, rejected_ids: torch.Tensor) -> tuple[float, float]:
         with torch.no_grad():
@@ -223,6 +223,7 @@ def run_train(CONFIG: TrainConfig) -> None:
             wandb.log({
                 "loss": avg_loss,
                 "neo_param_grad_norm": sum(epoch_grad_norms) / len(epoch_grad_norms),
+                "neo_param_norm": neo_param.norm().item()
             })
         
         tqdm.write(f"Epoch {epoch+1}/{CONFIG.N_EPOCHS} mean loss: {avg_loss:.4f} | saving to {CONFIG.SAVE_PATH}/epoch_{epoch+1}.pt")

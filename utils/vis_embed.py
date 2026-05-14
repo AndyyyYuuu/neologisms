@@ -7,7 +7,7 @@ from sklearn.decomposition import PCA
 import seaborn as sns
 import pandas as pd
 
-def visualize(embeds: list[torch.Tensor], cust_embed_labels: list[str], ref_model: LMBackend = None, pca_dims: int = 2, k_neighbors: int = 10, title: str = "Embeddings", embed_name: str = "<neo>", n_components: int = 2):
+def visualize(embeds: list[torch.Tensor], cust_embed_labels: list[str], ref_model: LMBackend = None, pca_dims: int = 2, k_neighbors: int = 3, title: str = "Embeddings", embed_name: str = "<neo>", n_components: int = 2):
 
     if len(embeds) < len(cust_embed_labels):
         raise ValueError("embeds must have at least as many elements as cust_embed_labels")

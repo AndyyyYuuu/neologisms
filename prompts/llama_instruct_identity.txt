@@ -1,0 +1,5 @@
+<|begin_of_text|><|start_header_id|>user<|end_header_id|>
+Repeat the word I give you and nothing else.
+Word: {word}<|eot_id|>
+<|start_header_id|>assistant<|end_header_id|>
+

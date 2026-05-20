@@ -14,6 +14,14 @@ class Generator:
 
     def __repr__(self):
         return f"Generator(\n\tBackend: {self.model_backend.name}\n\tEmbedding Size: {self.embedding_shape})"
+    
+    def get_next_probs(self, prompt: torch.Tensor, temperature: float = 0.0) -> int:
+        prompt = prompt.to(self.device).to(self.dtype)
+        with torch.no_grad():
+            output = self.model_backend.embeds_forward(prompt.unsqueeze(0))
+        logits = output.logits
+        next_logits = logits[0, -1, :]
+        return torch.softmax(next_logits / temperature, dim=-1)
 
     def _generate_response(self, prompt: torch.Tensor, max_new_tokens: int = 32, temperature: float = 0.0) -> str:
         prompt = prompt.to(self.device).to(self.dtype)

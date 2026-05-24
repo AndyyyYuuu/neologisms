@@ -7,7 +7,7 @@ from pathlib import Path
 DIR = Path(__file__).parent
 
 WORD = "foreclearing"
-DEFINITION = (df := pd.read_csv("data/obscure_sorrows.csv", skipinitialspace=True).set_axis(['word', 'definition'], axis=1))[(df["word"].str.strip('"') == WORD)]["definition"].iloc[0]
+DEFINITION = (df := pd.read_csv(DIR / "data/obscure_sorrows.csv", skipinitialspace=True).set_axis(['word', 'definition'], axis=1))[(df["word"].str.strip('"') == WORD)]["definition"].iloc[0]
 print(DEFINITION)
 
 CONFIG = neologisms.TrainConfig(

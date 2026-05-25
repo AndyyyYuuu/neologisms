@@ -17,12 +17,12 @@ CONFIG = neologisms.TrainConfig(
     N_EPOCHS = 64,
     SAVE_PATH = DIR / "saves/epochs",
     BETA = 0.2,
-    PROBS_CACHE_PATH = DIR / "saves/ref_lp_llama-3.2-1b-instruct.pt",
+    PROBS_CACHE_PATH = DIR / "saves/ref_lp_llama-3.2-3b-instruct.pt",
     ON_THE_FLY_REF_PROBS = True,
-    MODEL_BACKEND = neologisms.HFTransformerBackend("meta-llama/Llama-3.2-1B-Instruct", "/Volumes/backrooms/huggingface", dtype=torch.bfloat16),
+    MODEL_BACKEND = neologisms.HFTransformerBackend("meta-llama/Llama-3.2-3B-Instruct", "/Volumes/backrooms/huggingface", dtype=torch.float32),
     EPOCH_SIZE = 128,
     DO_WANDB = False,
-    NEO_DTYPE = torch.bfloat16,
+    NEO_DTYPE = torch.float32,
     SPECIAL_DATA_PROCESS_FN = None,
     
 )

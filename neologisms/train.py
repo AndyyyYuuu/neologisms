@@ -223,7 +223,8 @@ def run_train(CONFIG: TrainConfig) -> None:
             wandb.log({
                 "loss": avg_loss,
                 "neo_param_grad_norm": sum(epoch_grad_norms) / len(epoch_grad_norms),
-                "neo_param_norm": neo_param.norm().item()
+                "neo_param_norm": neo_param.norm().item(),
+                "distance_from_start": (neo_param - ref_neo_param).norm().item(),
             })
         
         tqdm.write(f"Epoch {epoch+1}/{CONFIG.N_EPOCHS} mean loss: {avg_loss:.4f} | saving to {CONFIG.SAVE_PATH}/epoch_{epoch+1}.pt")

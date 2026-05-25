@@ -5,9 +5,9 @@ from pathlib import Path
 DIR = Path(__file__).parent
 CONTROL = False
 
-model_backend = neologisms.HFTransformerBackend("meta-llama/Llama-3.2-1B-Instruct", "/Volumes/backrooms/huggingface", dtype=torch.bfloat16)
-neo_param = torch.load(DIR / "saves/llama1b_start-the.pt", map_location=model_backend.device)
-generator = neologisms.Generator(model_backend, "prompts/llama_instruct_identity.txt", dtype=torch.bfloat16)
+model_backend = neologisms.HFTransformerBackend("meta-llama/Llama-3.2-3B-Instruct", "/Volumes/backrooms/huggingface", dtype=torch.bfloat16)
+neo_param = torch.load(DIR / "samples/llama3b_start-the.pt", map_location=model_backend.device)
+generator = neologisms.Generator(model_backend, "prompts/llama_instruct_identity.txt", dtype=torch.float32)
 ref_word = " the"
 
 # distance is 4.553794860839844e-05 from " the" for llama-1b_start-the.pt
@@ -17,7 +17,7 @@ def show_next_probs():
         probs = generator.get_next_probs(generator.prompt_template.default(), temperature=1)
     else:
         print(f"using tuned neologism embedding")
-        print(f"distance to \"{ref_word}\":", torch.nn.functional.mse_loss(neo_param, model_backend.str_to_embed(ref_word)[-1]).item())
+        print(f"distance to \"{ref_word}\":", (neo_param - model_backend.str_to_embed(ref_word)[-1]).norm().item()) # torch.nn.functional.mse_loss(neo_param, model_backend.str_to_embed(ref_word)[-1]).item())
         print("neo_param norm:", neo_param.norm().item())
         probs = generator.get_next_probs(generator.prompt_template.format(neo_param), temperature=1)
     print("top 10 next token probs:")

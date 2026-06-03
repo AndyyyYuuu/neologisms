@@ -28,3 +28,32 @@ The core procedure is outlined below:
 **Training objective:** Embedding $E_c$ is optimized using gradient descent while **all other parameters stay frozen**. We use a variant of DPO loss that encourages the likelihood of $y^{(c)}$ and the likelihood ratio between $y^{(c)}$ and $y^{(r)}$. 
 
 Congrats :tada: You have trained your very own neologism! 
+
+## Experiments
+### Obscure Sorrows
+I attempted to use fictional dictionary definitions alone to tune new token embeddings in the vocabulary of Llama 3.2 3B. 
+#### Setup
+The neologism was tuned with the following prompt: 
+```txt
+<|begin_of_text|><|start_header_id|>user<|end_header_id|>
+Provide a dictionary definition for the word "{neologism}".<|eot_id|>
+<|start_header_id|>assistant<|end_header_id|>
+Definition of "{neologism}": 
+```
+The chosen response was a fictional word definition from [`obscure_sorrows.csv`](experiments/obscure_sorrows/data/obscure_sorrows.csv), sourced from the [Dictionary of Obscure Sorrows](https://www.thedictionaryofobscuresorrows.com/). The rejected responses were sampled from real word definitions from an [English dictionary](data/en_dict.csv) ([source](https://github.com/benjihillard/English-Dictionary-Database/tree/main)). 
+
+#### Results
+
+I trained my neologism with the definition of "foreclearing": *n. the act of deliberately refusing to learn the scientific explanations of things out of fear that it will ruin the magic*. When injected back into training prompt, the neologism consistently yielded the following type of definition: 
+- `The act of purposely not telling children so they won't ask.`
+- `The act of intentionally not telling children not to touch or manipulate objects, especially toys or machinery, in order to prevent them from losing the value of their structural or functional integrity by handling them.`
+
+Given that the responses did not match the definition of *foreclearing* exactly, I concluded that underfitting was likely to be more of a concern than overfitting. I then prompted the model to define the neologism using different prompts: 
+
+| Prompt | Continuation |
+|--------|--------------|
+| user: Define the word "{neo}" without using the word itself. \n assistant: | I didn't quite catch the start of your question. Please rephrase or provide more context, and I'll do my best to help! |
+| user: Define the word "{neo}" without using the word itself. \n assistant: Here is the definition of "{neo}" | A popular cultural phenomenon, often referred to as a mysterious and coveted concept, is a colloquialism that has become a subject of fascination and speculation. It is a term used to express a sense of exclusivity and superiority, implying that it is a secret knowledge or information that is not publicly available or widely understood. It is often associated with a sense of intrigue and exclusivity, and is frequently referenced in popular culture, particularly among certain subcultures and communities. |
+| | The mysterious and exclusive concept that refers to a secret knowledge or information that is not to be shared with the general public, often considered too sensitive or confidential. It is a term used to describe a piece of information that is not publicly disclosed, but is known only to a select group of people, often with a sense of exclusivity and prestige. It is a term often used to convey that something is being kept hidden or not to be discussed, and is often associated with a sense of mystery, intrigue, and secrecy. |
+
+In some sense, I don't believe that the embedding space of Llama 3.2 3B has the capacity to approximate a complex fictional word like "foreclearing", but you can still see glimpses of the definition in the model's responses. 

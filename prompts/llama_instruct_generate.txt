@@ -1,0 +1,4 @@
+<|begin_of_text|><|start_header_id|>user<|end_header_id|>
+Write an example paragraph that provides a sense of { feeling}.<|eot_id|>
+<|start_header_id|>assistant<|end_header_id|>
+Sure, here's a paragraph that exemplifies{ feeling}. 

@@ -1,8 +1,7 @@
-# Neologisms
-
-*Teaching LLMs words we don't have words for*  
-  
-
+<div align="center">
+  <h1>Neologisms</h1>
+    <i>Teaching LLMs words we don't have words for</i><br><br>
+</div>
 
 Can we invent new words to communicate better with LLMs? ["Neologism Learning For Controllability and Self Verbalization"](https://arxiv.org/pdf/2510.08506) says yes. 
 
@@ -35,15 +34,11 @@ The core procedure is outlined below:
 
 Congrats :tada: You have trained your very own neologism! 
 
-## Experiments
-
-
-
-### Obscure Sorrows
+## Experiment: Obscure Sorrows
 
 I attempted to use fictional dictionary definitions alone to tune new token embeddings in the vocabulary of Llama 3.2 3B. 
 
-#### Setup
+### Setup
 
 The neologism was tuned with the following prompt: 
 
@@ -56,7 +51,7 @@ Definition of "{neologism}":
 
 The chosen response was a fictional word definition from `[obscure_sorrows.csv](experiments/obscure_sorrows/data/obscure_sorrows.csv)`, sourced from the *[Dictionary of Obscure Sorrows](https://www.thedictionaryofobscuresorrows.com/)*. The rejected responses were sampled from real word definitions from an [English dictionary](data/en_dict.csv) ([source](https://github.com/benjihillard/English-Dictionary-Database/tree/main)). 
 
-#### Results
+### Results
 
 I trained my neologism with the following two definitions. The first is from the *Dictionary* and the second is my own invention. 
 
@@ -66,7 +61,7 @@ I trained my neologism with the following two definitions. The first is from the
 > **cheese-like**
 > adj. relating to cheese, fungus, and fermentation
 
-### "Foreclearing"
+#### "Foreclearing"
 
 When injected back into training prompt, the neologism consistently yielded the following type of definition: 
 
@@ -85,7 +80,9 @@ I then prompted the model to define the neologism using different prompts:
 
 In some sense, I don't believe that the embedding space of Llama 3.2 3B has the capacity to approximate a complex fictional word like "foreclearing", but you can still see glimpses of the definition in the model's responses. 
 
-### "Cheese-like"
+#### "Cheese-like"
+
+Examples from the cheese-like neologism are below: 
 
 | Prompt | Continuation (cheese-like) |
 |-|-|

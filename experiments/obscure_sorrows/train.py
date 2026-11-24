@@ -1,7 +1,13 @@
 import argparse
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 DIR = Path(__file__).parent
+
+MODEL_CACHE_DIR = os.getenv("MODEL_CACHE_DIR", None)
 
 DEFAULT_WORD = "foreclearing"
 
@@ -44,7 +50,7 @@ def build_config(definition: str):
         ON_THE_FLY_REF_PROBS = True,
         MODEL_BACKEND = neologisms.HFTransformerBackend(
             "meta-llama/Llama-3.2-3B-Instruct",
-            "/Volumes/backrooms/huggingface",
+            MODEL_CACHE_DIR,
             dtype=torch.float32,
         ),
         EPOCH_SIZE = 128,

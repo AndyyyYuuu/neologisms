@@ -1,3 +1,4 @@
+import argparse
 from dataset import LengthDataset
 import neologisms
 import pandas as pd
@@ -8,6 +9,10 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--model", default="meta-llama/Llama-3.2-1B-Instruct")
+args = parser.parse_args()
 
 MIN_LENGTH = 5
 MAX_LENGTH = 50
@@ -29,11 +34,11 @@ CONFIG = neologisms.TrainConfig(
     SAVE_PATH = DIR / f"saves/{run_id}",
     BETA = 0.2,
     LEARNING_RATE = 1e-4,
-    PROBS_CACHE_PATH = DIR / f"saves/{run_id}/length_neo_ref_lp_llama-3.2-1b-instruct.pt",
+    PROBS_CACHE_PATH = DIR / f"saves/{run_id}/length_neo_ref_lp_{args.model.split('/')[-1].lower()}.pt",
     ON_THE_FLY_REF_PROBS = True,
-    MODEL_BACKEND = neologisms.HFTransformerBackend("meta-llama/Llama-3.2-1B-Instruct", MODEL_CACHE_DIR, dtype=torch.float32),
+    MODEL_BACKEND = neologisms.HFTransformerBackend(args.model, MODEL_CACHE_DIR, dtype=torch.float32),
     EPOCH_SIZE = 128,
-    DO_WANDB = False,
+    DO_WANDB = bool(os.getenv("WANDB_API_KEY")),
     NEO_DTYPE = torch.float32,
     SPECIAL_DATA_PROCESS_FN = None,
     

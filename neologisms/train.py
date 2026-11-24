@@ -13,6 +13,7 @@ import csv
 from .template import EmbeddingTemplate
 from .lm import LMBackend, HFTransformerBackend
 from typing import Callable
+from pathlib import Path
 
 
 
@@ -22,8 +23,8 @@ class TrainConfig:
     NEO_PROMPT_PATH: str
     DATASET: Dataset
     N_EPOCHS: int
-    SAVE_PATH: str
-    PROBS_CACHE_PATH: str
+    SAVE_PATH: str | Path
+    PROBS_CACHE_PATH: str | Path
     BETA: float
     MODEL_BACKEND: LMBackend
     LEARNING_RATE: float = 1e-3

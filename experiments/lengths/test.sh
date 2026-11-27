@@ -21,5 +21,6 @@ PYTHONPATH="$PWD" .venv/bin/python experiments/lengths/test.py \
     --model "meta-llama/Llama-3.2-3B-Instruct" \
     --embed "experiments/lengths/embeds/llama-3.2-3b_5-50.pt" \
     --sample-size 10 \
+    --job-id "$JOB_ID" \
 
 echo "end: $(date)"

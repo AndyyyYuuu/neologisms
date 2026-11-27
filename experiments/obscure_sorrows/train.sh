@@ -17,6 +17,6 @@ echo "start: $(date)"
 
 source .venv/bin/activate
 
-PYTHONPATH="$PWD" .venv/bin/python experiments/obscure_sorrows/train.py "$@"
+PYTHONPATH="$PWD" .venv/bin/python experiments/obscure_sorrows/train.py --job-id "$JOB_ID" "$@"
 
 echo "end: $(date)"

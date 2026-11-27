@@ -177,6 +177,7 @@ def run_train(CONFIG: TrainConfig) -> None:
 
     
 
+    best_loss = float("inf")
     for epoch in tqdm(range(CONFIG.N_EPOCHS), desc="Training"):
         epoch_losses = []
         epoch_grad_norms = []
@@ -227,6 +228,10 @@ def run_train(CONFIG: TrainConfig) -> None:
                 "neo_param_norm": neo_param.norm().item(),
                 "distance_from_start": (neo_param - ref_neo_param).norm().item(),
             })
-        
-        tqdm.write(f"Epoch {epoch+1}/{CONFIG.N_EPOCHS} mean loss: {avg_loss:.4f} | saving to {CONFIG.SAVE_PATH}/epoch_{epoch+1}.pt")
-        torch.save(neo_param.data, f"{CONFIG.SAVE_PATH}/epoch_{epoch+1}.pt")
+
+        if avg_loss < best_loss:
+            best_loss = avg_loss
+            tqdm.write(f"Epoch {epoch+1}/{CONFIG.N_EPOCHS} mean loss: {avg_loss:.4f} | saving to {CONFIG.SAVE_PATH}/epoch_{epoch+1}.pt")
+            torch.save(neo_param.data, f"{CONFIG.SAVE_PATH}/epoch_{epoch+1}.pt")
+        else:
+            tqdm.write(f"Epoch {epoch+1}/{CONFIG.N_EPOCHS} mean loss: {avg_loss:.4f} | no improvement (best {best_loss:.4f})")

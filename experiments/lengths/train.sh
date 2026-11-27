@@ -18,7 +18,8 @@ echo "start: $(date)"
 source .venv/bin/activate
 
 PYTHONPATH="$PWD" .venv/bin/python experiments/lengths/train.py \
-    --model "meta-llama/Llama-3.2-3B-Instruct"\
+    --model "meta-llama/Llama-3.2-3B-Instruct" \
+    --job-id "$JOB_ID" \
     "$@"
 
 echo "end: $(date)"
